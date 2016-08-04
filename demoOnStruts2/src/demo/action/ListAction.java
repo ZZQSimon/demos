@@ -2,10 +2,10 @@ package demo.action;
 
 import demo.bean.User;
 
-public class UserAction {
+public class ListAction {
 	private User user;
 
-	public UserAction() {
+	public ListAction() {
 	}
 
 	public void setUser(User user) {

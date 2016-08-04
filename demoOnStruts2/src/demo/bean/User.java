@@ -1,4 +1,4 @@
-package demo;
+package demo.bean;
 
 public class User {
 	private String username;
