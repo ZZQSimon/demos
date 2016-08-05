@@ -46,6 +46,12 @@ $(function() {
 		});
 	});
 	
+	$(".tab-excelbutton").click(function(){
+		DCIM.messager.confirm('确认', '确定要导出么?', function(r){
+			if (r){window.location.href='${pageContext.request.contextPath}/expt';}
+		});
+	});
+	
 	$(".tab-delbutton").click(function(){
 		var dataOption = parseOption(this);
 		if(dataOption.disable){
@@ -94,26 +100,62 @@ function refreshTabGrid(){
 }
 </script>
 <body>
-	<div id="tabsconfig" class="easyui-layout" style="width: 100%; height: 100%;">
-	<div data-options="region:'north'" style="height: 28px; overflow: hidden;">
-		<div class="easyui-panel" data-options="iconCls: 'icon-edit',border:false" title="人员列表"></div>
+	<div id="tabsconfig" class="easyui-layout"
+		style="width: 100%; height: 100%;">
+		<div data-options="region:'north'" style="height: 78px; overflow: hidden;">
+			<div class="easyui-panel" data-options="iconCls: 'icon-edit',border:false" title="人员列表"></div>
+			这里是标题栏
+		</div>
+		<div id="assettype_tree_div" data-options="region:'west'" style="width: 29%; padding: 2px;">
+			<div> <div id="aa" class="easyui-accordion"
+					style="position: absolute; top: 27px; left: 0px; right: 0px; bottom: 0px;">
+					<div title="博文管理" iconcls="icon-save"
+						style="overflow: auto; padding: 10px;">
+						<ul class="easyui-tree">
+							<li><span>Folder</span>
+								<ul>
+									<li><span>Sub Folder 1</span>
+										<ul>
+											<li><span><a target="mainFrame"
+													href="http://www.baidu.com">审核博客</a></span></li>
+											<li><span><a href="#">File 12</a></span></li>
+											<li><span>File 13</span></li>
+										</ul></li>
+									<li><span>File 2</span></li>
+									<li><span>File 3</span></li>
+								</ul></li>
+							<li><span><a href="#">File21</a></span></li>
+						</ul>
+					</div>
+					<div title="新闻管理" iconcls="icon-reload" selected="true"
+						style="padding: 10px;">content2</div>
+					<div title="资源管理">content3</div>
+				</div>
+			</div>
+		</div>
+		<div data-options="region:'center'">
+			<table id="tabsList" class="easyui-datagrid" fit="true">
+				<thead>
+					<tr>
+						<th data-options="field:'id',sortable:true,checkbox:true"></th>
+						<th data-options="field:'username',width:'20%'">姓名</th>
+						<th data-options="field:'password',width:'10%',sortable:true">密码</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+		<div id="tb" style="height: auto">
+			<a href="javascript:void(0)" class="easyui-linkbutton tab-addbutton"
+				data-options="iconCls:'icon-add',plain:true,width_pop:'60%',height_pop:'55%',url:'${pageContext.request.contextPath}/add'">添加</a>
+			<a href="javascript:void(0)"
+				class="easyui-linkbutton auto-editbutton"
+				data-options="iconCls:'icon-edit',plain:true,index:'id',width_pop:'60%',height_pop:'55%',url:'${pageContext.request.contextPath}/tabsCfg/u'">编辑</a>
+			<a href="javascript:void(0)" class="easyui-linkbutton tab-delbutton"
+				data-options="iconCls:'icon-remove',plain:true,index:'id',url:'${pageContext.request.contextPath}/tabsCfg/d'">删除</a>
+			<a href="javascript:void(0)"
+				class="easyui-linkbutton tab-excelbutton"
+				data-options="iconCls:'icon-excel',plain:true,index:'id'">导出</a>
+		</div>
 	</div>
-	<div data-options="region:'center'">
-		<table id="tabsList" class="easyui-datagrid" fit="true">
-			<thead>
-				<tr>
-					<th data-options="field:'id',sortable:true,checkbox:true"></th>
-					<th data-options="field:'username',width:'20%'">姓名</th>
-					<th data-options="field:'password',width:'10%',sortable:true">密码</th>
-				</tr>
-			</thead>
-		</table>
-	</div>
-	<div id="tb" style="height: auto">
-		<a href="javascript:void(0)" class="easyui-linkbutton tab-addbutton" data-options="iconCls:'icon-add',plain:true,width_pop:'60%',height_pop:'55%',url:'${pageContext.request.contextPath}/add'">添加</a>
-		<a href="javascript:void(0)" class="easyui-linkbutton auto-editbutton" data-options="iconCls:'icon-edit',plain:true,index:'id',width_pop:'60%',height_pop:'55%',url:'${pageContext.request.contextPath}/tabsCfg/u'">编辑</a>
-		<a href="javascript:void(0)" class="easyui-linkbutton tab-delbutton" data-options="iconCls:'icon-remove',plain:true,index:'id',url:'${pageContext.request.contextPath}/tabsCfg/d'">删除</a>
-	</div>
-</div>
 </body>
 </html>
