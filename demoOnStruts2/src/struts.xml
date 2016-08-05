@@ -30,6 +30,15 @@
 			<result name="success">/loginSuccess.jsp</result>
 			<result name="login">/loginError.jsp</result>
 		</action>
+		<action name="expt" class="demo.action.ExcelAction"
+			method="export">
+			<result name="excel" type="stream">  
+                <param name="contentType">application/vnd.ms-excel</param>  
+                <param name="contentDisposition">attachment;filename="${downloadFileName}"</param>  
+                <param name="bufferSize">1024</param>
+                <param name="inputName">excelFile</param>  
+            </result>  
+		</action>
 	</package>
 	<package name="Json" extends="json-default" namespace="/json">
 		<action name="getUsers" class="demo.action.UserAction" method="getList">
