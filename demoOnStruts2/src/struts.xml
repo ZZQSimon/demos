@@ -5,11 +5,37 @@
 <struts>
 	<constant name="struts.devMode" value="ture"></constant>
 	<package name="default" namespace="/" extends="struts-default">
-<!-- 		<default-action-ref name="index"></default-action-ref> -->
-		<action name="index"><result>index.jsp</result></action>
-		<action name="userAction" class="demo.action.UserAction" method="doUserLogin">
+		<!-- <default-action-ref name="index"></default-action-ref> -->
+		<action name="index">
+			<result>index.jsp</result>
+		</action>
+		<action name="login" class="demo.action.UserAction"
+			method="initt">
+			<result name="success">/index.jsp</result>
+		</action>
+		<action name="add" class="demo.action.UserAction"
+			method="add">
+			<result name="success">/index.jsp</result>
+		</action>
+		<action name="mdf" class="demo.action.UserAction"
+			method="modify">
+			<result name="success">/index.jsp</result>
+		</action>
+		<action name="delete" class="demo.action.UserAction"
+			method="delete">
+			<result name="success">/index.jsp</result>
+		</action>
+		<action name="userAction" class="demo.action.UserAction"
+			method="doUserLogin">
 			<result name="success">/loginSuccess.jsp</result>
 			<result name="login">/loginError.jsp</result>
+		</action>
+	</package>
+	<package name="Json" extends="json-default" namespace="/json">
+		<action name="getUsers" class="demo.action.UserAction" method="getList">
+			<result type="json" name="success">
+				<param name="root">jarray</param>
+			</result>
 		</action>
 	</package>
 </struts>
