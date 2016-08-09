@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.simon.framework.sys.style.mapper.StyleMapper">
+
+	<resultMap id="style" type="com.simon.framework.sys.style.bean.Style">
+		<result property="id" jdbcType="INTEGER" column="id" />
+		<result property="style" jdbcType="VARCHAR" column="style" />
+		<result property="status" jdbcType="TINYINT" column="status" />
+	</resultMap>
+
+	<resultMap id="history"
+		type="com.simon.framework.sys.style.bean.StyleHistory">
+		<result property="id" jdbcType="INTEGER" column="ID" />
+		<result property="styleId" jdbcType="VARCHAR" column="style_id" />
+		<result property="operator" jdbcType="VARCHAR" column="operator" />
+		<result property="operateDate" jdbcType="VARCHAR" column="operate_date" />
+	</resultMap>
+
+	<sql id="BASE_STYLE_LIST">
+		style,
+		status
+	</sql>
+
+	<sql id="BASE_HISTORY_LIST">
+		style_id,
+		operator,
+		operate_date
+	</sql>
+
+	<select id="getStyle" resultMap="style">
+		SELECT
+		id,
+		<include refid="BASE_STYLE_LIST" />
+		FROM sys_front_styles
+		where status = 1
+	</select>
+
+	<update id="updateStylesAsUnavaliable">
+		update sys_front_styles
+		set
+		status = 0
+	</update>
+
+	<update id="updateStyleToAvaliable">
+		update sys_front_styles
+		set
+		status = 1
+		where
+		id=#{id}
+	</update>
+
+	<select id="getHistories">
+		select
+		id,
+		<include refid="BASE_HISTORY_LIST" />
+		from sys_front_styles_history
+	</select>
+
+	<insert id="insertHistory">
+		INSERT INTO sys_front_styles_history(
+		<include refid="BASE_HISTORY_LIST" />
+		) VALUES(
+		#{styleId},
+		#{operator},
+		#{operateDate}
+		)
+	</insert>
+</mapper>

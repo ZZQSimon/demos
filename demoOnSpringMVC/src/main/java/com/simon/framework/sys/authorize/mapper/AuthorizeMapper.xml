@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.simon.framework.sys.authorize.mapper.AuthorizeMapper">
+
+	<cache eviction="LRU" flushInterval="60000" size="512" readOnly="false" />
+
+	<resultMap id="user" type="com.simon.framework.sys.authorize.beans.User">
+		<id property="id" jdbcType="INTEGER" column="ID" />
+		<result property="username" jdbcType="VARCHAR" column="USER_NAME" />
+		<result property="password" jdbcType="VARCHAR" column="PASSWORD" />
+	</resultMap>
+
+	<resultMap id="userRole"
+		type="com.simon.framework.sys.authorize.beans.UserRole">
+		<result property="id" jdbcType="INTEGER" column="ID" />
+		<result property="userId" jdbcType="INTEGER" column="USER_ID" />
+		<result property="roleId" jdbcType="INTEGER" column="ROLE_ID" />
+	</resultMap>
+
+	<resultMap id="role" type="com.simon.framework.sys.authorize.beans.Role">
+		<id property="id" jdbcType="INTEGER" column="ID" />
+		<result property="roleName" jdbcType="VARCHAR" column="ROLE_NAME" />
+	</resultMap>
+
+	<resultMap id="roleResource"
+		type="com.simon.framework.sys.authorize.beans.RoleResource">
+		<id property="id" jdbcType="INTEGER" column="ID" />
+		<id property="roleId" jdbcType="INTEGER" column="ROLE_ID" />
+		<id property="resourceId" jdbcType="INTEGER" column="RESOURCE_ID" />
+	</resultMap>
+
+	<resultMap id="resource"
+		type="com.simon.framework.sys.authorize.beans.Resource">
+		<id property="id" jdbcType="INTEGER" column="id" />
+		<id property="priority" jdbcType="INTEGER" column="priority" />
+		<id property="parentId" jdbcType="INTEGER" column="parent_id" />
+		<id property="level" jdbcType="INTEGER" column="level" />
+		<id property="resourceType" jdbcType="VARCHAR" column="resource_type" />
+		<id property="imageUrl" jdbcType="VARCHAR" column="image_url" />
+		<id property="link" jdbcType="VARCHAR" column="link" />
+		<id property="description" jdbcType="VARCHAR" column="description" />
+		<id property="hasFloor" jdbcType="TINYINT" column="has_floor" />
+		<id property="flex" jdbcType="TINYINT" column="is_flex" />
+		<id property="ifGroup" jdbcType="TINYINT" column="if_group" />
+		<id property="updateUser" jdbcType="VARCHAR" column="update_user" />
+		<id property="updateTime" jdbcType="DATE" column="update_time" />
+		<id property="ifValid" jdbcType="TINYINT" column="if_valid" />
+		<id property="flexAuthority" jdbcType="TINYINT" column="is_flex_authority" />
+	</resultMap>
+
+	<resultMap id="floor" type="com.simon.framework.sys.authorize.beans.Floor">
+		<id property="id" jdbcType="INTEGER" column="ID" />
+		<id property="name" jdbcType="VARCHAR" column="FLOOR_NAME" />
+		<id property="ifValid" jdbcType="TINYINT" column="IF_VALID" />
+		<id property="updateTime" jdbcType="DATE" column="UPDATE_TIME" />
+	</resultMap>
+
+	<select id="getUserByName" resultMap="user">
+		SELECT
+		ID,
+		USER_NAME,
+		PASSWORD
+		FROM SYS_USER
+		WHERE USER_NAME=#{username}
+	</select>
+
+	<select id="getAllUsers" resultMap="user">
+		SELECT
+		ID,
+		USER_NAME,
+		PASSWORD
+		FROM SYS_USER
+	</select>
+
+	<insert id="insertUser">
+		INSERT INTO SYS_USER(USER_NAME,PASSWORD)
+		VALUES(#{username}, #{password})
+	</insert>
+
+	<update id="updateUser">
+		UPDATE SYS_USER SET PASSWORD=#{password} WHERE
+		ID=#{id}
+	</update>
+
+	<delete id="removeUser">
+		DELETE FROM SYS_USER WHERE ID=#{userId}
+	</delete>
+
+	<select id="getRoleById" resultMap="role">
+		SELECT
+		ID,
+		ROLE_NAME
+		FROM SYS_ROLE
+		WHERE ID = #{roleId}
+	</select>
+
+	<select id="getRoleByIds" resultMap="role">
+		SELECT
+		ID,
+		ROLE_NAME
+		FROM SYS_ROLE
+		<where>
+			ID in
+			<foreach item="item" collection="roleIds" separator="," open="("
+				close=")">
+				#{item}
+			</foreach>
+		</where>
+	</select>
+
+	<select id="getRoleByName" resultMap="role">
+		SELECT
+		ID,
+		ROLE_NAME
+		FROM SYS_ROLE
+		WHERE ROLE_NAME=#{roleName}
+	</select>
+
+	<select id="getAllRole" resultMap="role">
+		SELECT
+		ID,
+		ROLE_NAME
+		FROM SYS_ROLE
+	</select>
+
+	<insert id="insertRole">
+		INSERT INTO SYS_ROLE(ROLE_NAME) VALUES(#{roleName})
+	</insert>
+
+	<update id="updateRole">
+		UPDATE SYS_ROLE SET ROLE_NAME=#{roleName} WHERE
+		ID=#{id}
+	</update>
+
+	<delete id="removeRole">
+		DELETE FROM SYS_ROLE WHERE ID=#{roleId}
+	</delete>
+
+	<select id="getUserRoleRelationsByUserId" resultMap="userRole">
+		SELECT
+		ID,
+		USER_ID,
+		ROLE_ID
+		FROM SYS_USER_ROLE
+		WHERE USER_ID=#{userId}
+	</select>
+
+	<select id="getUserRoleRelationsByUserIds" resultMap="userRole">
+		SELECT
+		ID,
+		USER_ID,
+		ROLE_ID
+		FROM SYS_USER_ROLE
+		WHERE USER_ID in
+		<foreach item="item" collection="userIds" separator="," open="("
+			close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="getUserRoleRelationsByRoleId" resultMap="userRole">
+		SELECT
+		ID,
+		USER_ID,
+		ROLE_ID
+		FROM SYS_USER_ROLE
+		WHERE ROLE_ID = #{roleId}
+	</select>
+
+	<select id="getUserRoleRelationsByRoleIds" resultMap="userRole">
+		SELECT
+		ID,
+		USER_ID,
+		ROLE_ID
+		FROM SYS_USER_ROLE
+		WHERE ROLE_ID IN
+		<foreach item="item" collection="roleIds" separator="," open="("
+			close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="getUserRoleAllRelations" resultMap="userRole">
+		SELECT
+		ID,
+		USER_ID,
+		ROLE_ID
+		FROM SYS_USER_ROLE
+	</select>
+
+	<insert id="insertUserRole">
+		INSERT INTO SYS_USER_ROLE(USER_ID, ROLE_ID)
+		VALUES(#{userId}, #{roleId})
+	</insert>
+
+	<delete id="removeUserRoleByUserId">
+		DELETE FROM SYS_USER_ROLE WHERE USER_ID=#{userId}
+	</delete>
+
+	<delete id="removeUserRoleByRoleId">
+		DELETE FROM SYS_USER_ROLE WHERE ROLE_ID=#{roleId}
+	</delete>
+
+	<select id="getRoleResourceRelations" resultMap="roleResource">
+		SELECT
+		ID,
+		ROLE_ID,
+		RESOURCE_ID
+		FROM SYS_ROLE_RESOURCE
+		WHERE ROLE_ID=#{roleId}
+	</select>
+
+	<select id="getRoleResourceRelationsByResourceId" resultMap="roleResource">
+		SELECT
+		ID,
+		ROLE_ID,
+		RESOURCE_ID
+		FROM SYS_ROLE_RESOURCE
+		WHERE RESOURCE_ID = #{resourceId}
+	</select>
+
+	<select id="getRoleResourceRelationsByResourceIds" resultMap="roleResource">
+		SELECT
+		ID,
+		ROLE_ID,
+		RESOURCE_ID
+		FROM SYS_ROLE_RESOURCE
+		WHERE RESOURCE_ID IN
+		<foreach item="item" collection="resourceIds" separator=","
+			open="(" close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="getAllRoleResourceRelations" resultMap="roleResource">
+		SELECT
+		ID,
+		ROLE_ID,
+		RESOURCE_ID
+		FROM SYS_ROLE_RESOURCE
+	</select>
+
+	<insert id="insertRoleResource">
+		INSERT INTO SYS_ROLE_RESOURCE(ROLE_ID, RESOURCE_ID)
+		VALUES(#{roleId}, #{resourceId})
+	</insert>
+
+	<delete id="removeRoleResourceByRoleId">
+		DELETE FROM SYS_ROLE_RESOURCE WHERE ROLE_ID=#{roleId}
+	</delete>
+
+	<delete id="removeRoleResourceByResourceId">
+		DELETE FROM SYS_ROLE_RESOURCE
+		WHERE RESOURCE_ID =
+		#{resourceId}
+	</delete>
+
+	<delete id="removeRoleResourceByResourceIds">
+		DELETE FROM SYS_ROLE_RESOURCE
+		WHERE RESOURCE_ID IN
+		<foreach item="item" collection="resourceIds" separator=","
+			open="(" close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<sql id="BASE_RESOURCE_COLUMN_LIST">
+		id,
+		priority,
+		parent_id,
+		level,
+		resource_type,
+		image_url,
+		link,
+		description,
+		has_floor,
+		is_flex,
+		update_user,
+		update_time,
+		if_group,
+		if_valid,
+		is_flex_authority
+	</sql>
+
+	<select id="getNavigationResources" resultMap="resource">
+		SELECT
+		<include refid="BASE_RESOURCE_COLUMN_LIST" />
+		FROM sys_resource
+		where if_valid='1'
+		and (
+		id in
+		(select id from
+		sys_resource where parent_id in (select id from sys_resource where
+		parent_id=#{resourceId}))
+		or id in (select id from sys_resource where
+		parent_id=#{resourceId})
+		)
+		<if test="roleIds!=null ">
+			and id in (select resource_id from sys_role_resource where role_id in
+			<foreach item="item" collection="roleIds" separator="," open="("
+				close=")">
+				#{item}
+			</foreach>
+			)
+		</if>
+		order by priority asc
+	</select>
+
+	<select id="getMainNavigationResources" resultMap="resource">
+		SELECT
+		<include refid="BASE_RESOURCE_COLUMN_LIST" />
+		FROM sys_resource
+		where if_valid='1'
+		and level='1'
+		<if test="roleIds!=null ">
+			and id in (select resource_id from sys_role_resource where role_id in
+			<foreach item="item" collection="roleIds" separator="," open="("
+				close=")">
+				#{item}
+			</foreach>
+			)
+		</if>
+		order by priority asc
+	</select>
+
+	<select id="getAllResources" resultMap="resource">
+		SELECT
+		<include refid="BASE_RESOURCE_COLUMN_LIST" />
+		FROM sys_resource
+		where if_valid='1'
+		order by priority asc
+	</select>
+
+	<select id="getAllResourcesWithNotValid" resultMap="resource">
+		SELECT
+		<include refid="BASE_RESOURCE_COLUMN_LIST" />
+		FROM sys_resource
+		order by priority asc
+	</select>
+
+	<select id="getResourcesById" resultMap="resource">
+		SELECT
+		<include refid="BASE_RESOURCE_COLUMN_LIST" />
+		FROM sys_resource
+		where ID = #{resourceId}
+		order by priority asc
+	</select>
+
+	<select id="getResourcesByLevel" resultMap="resource">
+		SELECT
+		<include refid="BASE_RESOURCE_COLUMN_LIST" />
+		FROM sys_resource
+		where level = #{level}
+		order by priority asc
+	</select>
+
+	<select id="getResourcesByIds" resultMap="resource">
+		SELECT
+		<include refid="BASE_RESOURCE_COLUMN_LIST" />
+		FROM sys_resource
+		where ID in
+		<foreach item="item" collection="resourceIds" separator=","
+			open="(" close=")">
+			#{item}
+		</foreach>
+		order by priority asc
+	</select>
+
+	<select id="getResource" resultMap="resource">
+		SELECT
+		<include refid="BASE_RESOURCE_COLUMN_LIST" />
+		FROM sys_resource
+		where if_valid='1'
+		and parent_id = #{parentId}
+		and
+		description=#{resourceName}
+		and level=#{resourceLevel}
+		order by priority
+		asc
+	</select>
+
+	<insert id="insertResource" useGeneratedKeys="true" keyProperty="id">
+		insert into sys_resource(
+		priority,
+		parent_id,
+		level,
+		resource_type,
+		image_url,
+		link,
+		description,
+		has_floor,
+		is_flex,
+		if_group,
+		update_user,
+		update_time,
+		if_valid,
+		is_flex_authority
+		)
+		values(
+		#{priority},
+		#{parentId},
+		#{level},
+		#{resourceType},
+		#{imageUrl},
+		#{link},
+		#{description},
+		#{hasFloor},
+		#{flex},
+		#{ifGroup},
+		#{updateUser},
+		#{updateTime},
+		#{ifValid},
+		#{flexAuthority}
+		)
+	</insert>
+
+	<update id="updateResource">
+		UPDATE sys_resource
+		SET
+		<if test="priority!=null">
+			priority = #{priority},
+		</if>
+		<if test="parentId!=null">
+			parent_id = #{parentId},
+		</if>
+		<if test="level!=null">
+			level = #{level},
+		</if>
+		<if test="resourceType!=null">
+			resource_type = #{resourceType},
+		</if>
+		<if test="imageUrl!=null">
+			image_url = #{imageUrl},
+		</if>
+		<if test="link!=null">
+			link = #{link},
+		</if>
+		<if test="description!=null">
+			description = #{description},
+		</if>
+		<if test="hasFloor!=null">
+			has_floor = #{hasFloor},
+		</if>
+		<if test="flex!=null">
+			is_flex = #{flex},
+		</if>
+		<if test="updateUser!=null">
+			update_user = #{updateUser},
+		</if>
+		<if test="ifValid!=null">
+			if_valid = #{ifValid},
+		</if>
+		<if test="ifGroup!=null">
+			if_group = #{ifGroup},
+		</if>
+		<if test="flexAuthority!=null">
+			is_flex_authority = #{flexAuthority},
+		</if>
+		update_time = #{updateTime}
+		where
+		id = #{id}
+	</update>
+
+	<delete id="removeResourceById">
+		DELETE FROM sys_resource
+		WHERE id = #{resourceId}
+	</delete>
+
+	<delete id="removeResourceByIds">
+		DELETE FROM sys_resource
+		WHERE id in
+		<foreach item="item" collection="resourceIds" separator=","
+			open="(" close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<delete id="removeResourceByParentId">
+		DELETE FROM sys_resource
+		WHERE parent_id = #{parentId}
+		<if test="flexAuthority!=null">
+			and is_flex_authority = #{flexAuthority}
+		</if>
+	</delete>
+
+	<delete id="removeResourceByParentIds">
+		DELETE FROM sys_resource
+		WHERE parent_id in
+		<foreach item="item" collection="parentIds" separator=","
+			open="(" close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<select id="getResourceByParentId" resultMap="resource">
+		SELECT
+		<include refid="BASE_RESOURCE_COLUMN_LIST" />
+		FROM sys_resource
+		where if_valid='1'
+		and parent_id = #{parentId}
+		<if test="flexAuthority!=null">
+			and is_flex_authority = #{flexAuthority}
+		</if>
+		order by priority asc
+	</select>
+
+	<select id="getResourceIdsByParentId" resultMap="resource">
+		SELECT
+		ID
+		FROM sys_resource
+		where if_valid='1'
+		and parent_id=#{parentId}
+		order by
+		priority asc
+	</select>
+
+	<select id="getResourceIdsByParentIds" resultType="java.lang.Integer">
+		SELECT
+		ID
+		FROM sys_resource
+		where if_valid='1'
+		and parent_id in
+		<foreach item="item" collection="parentIds" separator=","
+			open="(" close=")">
+			#{item}
+		</foreach>
+		order by priority asc
+	</select>
+
+	<select id="getFloorResourceByParentIdAndNotInIds" resultType="java.lang.Integer">
+		SELECT
+		ID
+		FROM sys_resource
+		where
+		parent_id = #{parentId}
+		<if test="resourceIds.size()>0">
+			and id not in
+			<foreach item="item" collection="resourceIds" separator=","
+				open="(" close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="getFloors" resultMap="floor">
+		select
+		ID,
+		FLOOR_NAME,
+		IF_VALID,
+		UPDATE_TIME
+		FROM SYS_RESOURCE_FLOOR
+		WHERE
+		IF_VALID=1
+	</select>
+
+</mapper>
